@@ -1,6 +1,9 @@
 students = []
 
+# create a list with students who has any grade
+students_with_grades = []
 while True:
+    # menu text
     print("--- Students Grade Analyzer ---")
     print("1. Add a new student")
     print("2. Add grades for a student")
@@ -8,6 +11,7 @@ while True:
     print("4. Find the top student")
     print("5. Exit program")
 
+    # chouice input
     choice = input("Enter your choice: ")
 
     if choice == "1":
@@ -23,7 +27,7 @@ while True:
             # Create a dict with keys "name" and "grades"
             new_student = {
                 "name": name,
-                "grades": []
+                "grades": [],
             }
             # Add student to list
             students.append(new_student)
@@ -32,28 +36,25 @@ while True:
     elif choice == "2":
         # Input new student name
         name = input("Enter student name: ")
-
         # Check if student exists
-        exists = any(student["name"] == name for student in students)
-
-        if exists:
-            
-            grade_str = ""
-            while grade_str.lower() != "done":
+        student = next((s for s in students if s["name"] == name), None)
+        if student:     
+            while True:
+                # input grades
                 grade_str = input("Enter a grade (or 'done' to finish): ")
+
                 if grade_str.lower() == "done":
                     break
-                try:
+                # Check if "grade_str is digit"
+                if grade_str.isdigit():
                     grade = int(grade_str)
-                    for student in students:
-                        if student["name"] == name:
-                            student["grades"].append(grade)
-                            break
+                    # Check if grade is not lower than 100
+                    if grade <= 100:
+                        student["grades"].append(int(grade_str))
                     else:
-                        print(f"Error: student '{name}' not found.\n")
-                except ValueError:
-                    print("Error: you must enter a number.\n")     
-
+                        print("Error: you must enter a number between 0 and 100.")
+                else:
+                    print("Error: you must enter a number between 0 and 100.")
         else:
             print(f"Student '{name}' doesn't exist.")
 
@@ -61,30 +62,51 @@ while True:
         print("--- Student Report ---") 
         for student in students:
             try:
-                print(f"{student['name']}'s average grade is {(lambda s: sum(s)/len(s))(student['grades'])}")
+                # create new key to save average grade if it doesn't exist
+                student["average"] = sum(student["grades"])/len(student["grades"])
+                # add student who has any grades and his average grade
+                students_with_grades.append(student)
+
+                print(f"{student['name']}'s average grade is {student["average"]}")
+                        
             except ZeroDivisionError:
+                # the case when a student has no grades
                 print(f"{student['name']}'s average grade is N/A")
         print("-------------------------")
-        max_student = max(list(filter(lambda s: s["grades"], students)), key=lambda s: sum(s['grades']) / len(s['grades']))
-        min_student = min(list(filter(lambda s: s["grades"], students)), key=lambda s: sum(s['grades']) / len(s['grades']))
 
-        print(f"Max average: {sum(max_student['grades']) / len(max_student['grades'])}")
-        print(f"Min average: {sum(min_student['grades']) / len(min_student['grades'])}")
-        print(f"Overall average: {(lambda lst: sum(
-    map(lambda s: sum(s["grades"]) / len(s["grades"]), filter(lambda s: s["grades"], lst))
-) / len(list(filter(lambda s: s["grades"], lst))))(students)}")
+        if students_with_grades:
+            # count min, max and overall average grade if 'sudents_with_grades' is not empty
+            max_average = max(students_with_grades, key=lambda s: s["average"])["average"]
+            min_average = min(students_with_grades, key=lambda s: s["average"])["average"]
+            overall_average = sum(s["average"] for s in students_with_grades) / len(students_with_grades)
+
+            # output results
+            print(f"Max average: {max_average}")
+            print(f"Min average: {min_average}")
+            print(f"Overall average: {overall_average}")
+        else:
+            if not students:
+                # the case when 'sudents' is empty
+                print("There are no students in the list. Enter students and their grades")
+            else:
+                # the case when 'sudents_with_grades' is empty
+                print("There are no students with grades. Enter students' grades")
 
     elif choice == "4":
-        top_student = ((max(list(filter(lambda s: s["grades"], students)), key=lambda s: sum(s["grades"]) / len(s["grades"]))))
-        print(f"The student with the highest average is {top_student["name"]} with grade of {(lambda s: sum(s)/len(s))(top_student['grades'])}")
+        if students_with_grades:
+            # identify the student with the highest average grade and output information about him
+            top_student = max(students_with_grades, key=lambda s: s["average"])
+            print(f"The student with the highest average is {top_student["name"]} with grade of {top_student["average"]}")
+        else:
+            if not students:
+                # the case when 'sudents' is empty
+                print("There are no students in the list. Enter students and their grades")
+            else:
+                # the case when 'sudents_with_grades' is empty
+                print("There are no students with grades. Enter students' grades")
+
 
     elif choice == "5":
         print("Exitting program")
         break
         
-#добавить условия на проверку если у всех студентов нет оценок
-#
-#
-#
-#
-#
