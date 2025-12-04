@@ -7,7 +7,7 @@ cursor = connection.cursor()
 
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS students (
-id INTEGER PRIMARY KEY,
+id INTEGER PRIMARY KEY ,
 full_name TEXT NOT NULL,
 birth_year INTEGER)               
 ''')
@@ -69,4 +69,5 @@ cursor.executemany("INSERT INTO students (full_name, birth_year) VALUES (?, ?)",
 cursor.executemany("INSERT INTO grades (student_id, subject, grade) VALUES (?, ?, ?)", grades)
 
 connection.commit()
+
 connection.close()
